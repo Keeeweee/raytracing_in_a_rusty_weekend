@@ -1,3 +1,5 @@
+use crate::vec3::Vec3;
+
 mod vec3;
 
 fn main() {
@@ -9,9 +11,9 @@ fn main() {
 
     for j in (0..ny).rev() {
         for i in 0..nx {
-            let (r, g, b) = (i as f32 / nx as f32, j as f32 / ny as f32, 0.2 as f32);
-            let (ir, ig, ib) = ((255.99 * r) as i32, (255.99 * g) as i32, (255.99 * b) as i32);
-            println!("{} {} {}", ir, ig, ib);
+            let mut col: Vec3 = Vec3::new(i as f64 / nx as f64, j as f64 / ny as f64, 0.2 as f64);
+            col *= 255.99;
+            col.print_as_int();
         }
     }
 }
