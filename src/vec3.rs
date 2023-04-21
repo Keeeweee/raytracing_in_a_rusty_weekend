@@ -75,6 +75,14 @@ impl ops::Mul<f64> for Vec3 {
     }
 }
 
+impl ops::MulAssign<f64> for Vec3 {
+    fn mul_assign(&mut self, f: f64) {
+        self.x *= f;
+        self.y *= f;
+        self.z *= f;
+    }
+}
+
 impl ops::Div<f64> for Vec3 {
     type Output = Vec3;
 
