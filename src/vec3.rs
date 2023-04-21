@@ -33,6 +33,10 @@ impl Vec3 {
     pub fn unit(self) -> Vec3 {
         self / self.length()
     }
+
+    pub fn print_as_int(self) {
+        println!("{} {} {}", self.x as i32, self.y as i32, self.z as i32);
+    }
 }
 
 impl ops::Add<Vec3> for Vec3 {
