@@ -114,6 +114,14 @@ impl ops::MulAssign<f64> for Vec3 {
     }
 }
 
+impl ops::AddAssign<Vec3> for Vec3 {
+    fn add_assign(&mut self, v: Vec3) {
+        self.x += v.x;
+        self.y += v.y;
+        self.z += v.z;
+    }
+}
+
 impl ops::Div<f64> for Vec3 {
     type Output = Vec3;
 
