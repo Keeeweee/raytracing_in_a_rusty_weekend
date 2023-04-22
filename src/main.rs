@@ -1,16 +1,21 @@
 use crate::ray::Ray;
 use crate::vec3::Vec3;
+use std::fs::File;
+use std::io::prelude::*;
 
 mod vec3;
 mod ray;
 
 const NX: i32 = 200;
 const NY: i32 = 100;
+const IMG_PATH: &str = "images/03-blah.ppm";
 
-fn print_header() {
-    println!("P3");
-    println!("{} {}", NX, NY);
-    println!("255");
+fn print_header(file: &mut File) -> std::io::Result<()> {
+    writeln!(file, "P3")?;
+    writeln!(file, "{} {}", NX, NY)?;
+    writeln!(file, "255")?;
+
+    Ok(())
 }
 
 fn hit_sphere(center: Vec3, radius: f64, ray: Ray) -> bool {
@@ -31,8 +36,10 @@ fn color(ray: Ray) -> Vec3 {
     (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
 }
 
-fn main() {
-    print_header();
+fn main() -> std::io::Result<()> {
+    let mut file = File::create(IMG_PATH)?;
+    print_header(&mut file)?;
+
     let lower_left_corner = Vec3::new(-2.0, -1.0, -1.0);
     let horizontal = Vec3::new(4.0, 0.0, 0.0);
     let vertical = Vec3::new(0.0, 2.0, 0.0);
@@ -45,7 +52,9 @@ fn main() {
             let ray = Ray::new(origin, lower_left_corner + u * horizontal + v * vertical);
             let mut col = color(ray);
             col *= 255.99;
-            col.print_as_int();
+            col.print_as_int(&mut file)?;
         }
     }
+
+    Ok(())
 }
