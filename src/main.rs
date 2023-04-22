@@ -2,15 +2,20 @@ use crate::ray::Ray;
 use crate::vec3::Vec3;
 use std::fs::File;
 use std::io::prelude::*;
+use crate::camera::Camera;
 use crate::hittable::{Hittable, HittableList, Sphere};
+
+use rand::Rng;
 
 mod vec3;
 mod ray;
 mod hittable;
+mod camera;
 
 const NX: i32 = 200;
 const NY: i32 = 100;
-const IMG_PATH: &str = "images/04-hello_world.ppm";
+const NS: i32 = 100;
+const IMG_PATH: &str = "images/05-hello_world_averaged_pixels.ppm";
 
 fn print_header(file: &mut File) -> std::io::Result<()> {
     writeln!(file, "P3")?;
@@ -37,22 +42,25 @@ fn main() -> std::io::Result<()> {
     let mut file = File::create(IMG_PATH)?;
     print_header(&mut file)?;
 
-    let lower_left_corner = Vec3::new(-2.0, -1.0, -1.0);
-    let horizontal = Vec3::new(4.0, 0.0, 0.0);
-    let vertical = Vec3::new(0.0, 2.0, 0.0);
-    let origin = Vec3::new(0.0, 0.0, 0.0);
-
     let list: Vec<Box<dyn Hittable>> = vec![Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5)),
                                             Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0))];
     let world = HittableList::new(list);
+    let camera = Camera::default();
 
+    let mut rng = rand::thread_rng();
     for j in (0..NY).rev() {
         for i in 0..NX {
+            let mut col = Vec3::new(0.0, 0.0, 0.0);
+            for _ in 0..NS {
+                let u = (i as f64 + rng.gen_range(0.0..1.0)) / NX as f64;
+                let v = (j as f64 + rng.gen_range(0.0..1.0)) / NY as f64;
 
-            let u = i as f64 / NX as f64;
-            let v = j as f64 / NY as f64;
-            let ray = Ray::new(origin, lower_left_corner + u * horizontal + v * vertical);
-            let col = color(&ray, &world) * 255.99;
+                let ray = camera.get_ray(u, v);
+                col += color(&ray, &world);
+            }
+
+            col *= 255.99 / (NS as f64);
+
             col.print_as_int(&mut file)?;
         }
     }
