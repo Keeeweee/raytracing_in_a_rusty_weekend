@@ -90,6 +90,22 @@ impl ops::Mul<Vec3> for f64 {
     }
 }
 
+impl ops::Add<f64> for Vec3 {
+    type Output = Vec3;
+
+    fn add(self, f: f64) -> Vec3 {
+        Vec3::new(self.x + f, self.y + f, self.z + f)
+    }
+}
+
+impl ops::Add<Vec3> for f64 {
+    type Output = Vec3;
+
+    fn add(self, v: Vec3) -> Vec3 {
+        Vec3::new(self + v.x, self + v.y, self + v.z)
+    }
+}
+
 impl ops::MulAssign<f64> for Vec3 {
     fn mul_assign(&mut self, f: f64) {
         self.x *= f;
