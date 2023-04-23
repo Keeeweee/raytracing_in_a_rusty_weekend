@@ -37,7 +37,7 @@ fn random_in_unit_sphere() -> Vec3 {
 }
 
 fn color(ray: &Ray, world: &dyn Hittable) -> Vec3 {
-    return match world.hit(ray, 0.0, f64::INFINITY) {
+    return match world.hit(ray, 0.001, f64::INFINITY) {
         Some(hit_record) => {
             let target = hit_record.p + hit_record.normal + random_in_unit_sphere();
             color(&Ray::new(hit_record.p, target - hit_record.p), world) * 0.5
