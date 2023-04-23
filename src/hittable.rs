@@ -1,15 +1,17 @@
+use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
-pub struct HitRecord {
+pub struct HitRecord<'a> {
     pub t: f64,
     pub p: Vec3,
     pub normal: Vec3,
+    pub material: &'a Box<dyn Material>,
 }
 
-impl HitRecord {
-    pub fn new(t: f64, p: Vec3, normal: Vec3) -> HitRecord {
-        HitRecord { t, p , normal }
+impl HitRecord<'_> {
+    pub fn new(t: f64, p: Vec3, normal: Vec3, material: &Box<dyn Material>) -> HitRecord {
+        HitRecord { t, p , normal, material }
     }
 }
 
@@ -20,11 +22,12 @@ pub trait Hittable {
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f64,
+    pub material: Box<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, radius: f64) -> Sphere {
-        Sphere { center, radius }
+    pub fn new(center: Vec3, radius: f64, material: Box<dyn Material>) -> Sphere {
+        Sphere { center, radius , material}
     }
 }
 
@@ -40,13 +43,13 @@ impl Hittable for Sphere {
             let temp = (-b - discriminant.sqrt()) / a;
             if temp < t_max && temp > t_min {
                 let collision = ray.point_at_parameter(temp);
-                return Some(HitRecord::new(temp, collision,  (collision - self.center) / self.radius));
+                return Some(HitRecord::new(temp, collision,  (collision - self.center) / self.radius, &self.material));
             }
 
             let temp = (-b + discriminant.sqrt()) / a;
             if temp < t_max && temp > t_min {
                 let collision = ray.point_at_parameter(temp);
-                return Some(HitRecord::new(temp, collision,  (collision - self.center) / self.radius));
+                return Some(HitRecord::new(temp, collision,  (collision - self.center) / self.radius, &self.material));
             }
         }
         None

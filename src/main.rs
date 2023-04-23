@@ -6,16 +6,20 @@ use crate::camera::Camera;
 use crate::hittable::{Hittable, HittableList, Sphere};
 
 use rand::Rng;
+use crate::material::{Lambertian, Metal};
 
 mod vec3;
 mod ray;
 mod hittable;
 mod camera;
+mod material;
 
 const NX: i32 = 200;
 const NY: i32 = 100;
 const NS: i32 = 100;
-const IMG_PATH: &str = "images/07-sphere-with-difusion-gamma-corrected.ppm";
+const IMG_PATH: &str = "images/08-spheres-with-materials.ppm";
+
+const MAX_DEPTH:i32 = 50;
 
 fn print_header(file: &mut File) -> std::io::Result<()> {
     writeln!(file, "P3")?;
@@ -25,22 +29,21 @@ fn print_header(file: &mut File) -> std::io::Result<()> {
     Ok(())
 }
 
-fn random_in_unit_sphere() -> Vec3 {
-    let mut rng = rand::thread_rng();
-    let mut p = 2.0 * Vec3::new(rng.gen_range(0.0..1.0), rng.gen_range(0.0..1.0), rng.gen_range(0.0..1.0))
-                        - Vec3::new(1.0, 1.0, 1.0);
-    while p.squared_length() >= 1.0 {
-        p = 2.0 * Vec3::new(rng.gen_range(0.0..1.0), rng.gen_range(0.0..1.0), rng.gen_range(0.0..1.0))
-              - Vec3::new(1.0, 1.0, 1.0);
-    }
-    p
-}
-
-fn color(ray: &Ray, world: &dyn Hittable) -> Vec3 {
+fn color(ray: &Ray, world: &dyn Hittable, depth: i32) -> Vec3 {
     return match world.hit(ray, 0.001, f64::INFINITY) {
         Some(hit_record) => {
-            let target = hit_record.p + hit_record.normal + random_in_unit_sphere();
-            color(&Ray::new(hit_record.p, target - hit_record.p), world) * 0.5
+            if depth > MAX_DEPTH {
+                Vec3::new(0.0, 0.0, 0.0);
+            }
+
+            match hit_record.material.scatter(ray, &hit_record) {
+                Some((scatter, attenuation)) => {
+                    attenuation * color(&scatter, world, depth + 1)
+                }
+                None => {
+                    Vec3::new(0.0, 0.0, 0.0)
+                }
+            }
         }
         None => {
             let unit_direction = ray.direction.unit();
@@ -54,8 +57,20 @@ fn main() -> std::io::Result<()> {
     let mut file = File::create(IMG_PATH)?;
     print_header(&mut file)?;
 
-    let list: Vec<Box<dyn Hittable>> = vec![Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5)),
-                                            Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0))];
+    let list: Vec<Box<dyn Hittable>> = vec![Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0),
+                                                                 0.5,
+                                                                 Box::new(Lambertian::new(Vec3::new(0.8, 0.3, 0.3))))),
+                                            Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0),
+                                                                 100.0,
+                                                                 Box::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0))))),
+                                            Box::new(Sphere::new(Vec3::new(1.0, 0.0, -1.0),
+                                                                 0.5,
+                                                                 Box::new(Metal::new(Vec3::new(0.8, 0.6, 0.2))))),
+                                            Box::new(Sphere::new(Vec3::new(-1.0, 0.0, -1.0),
+                                                                 0.5,
+                                                                 Box::new(Metal::new(Vec3::new(0.8, 0.8, 0.8))))),
+
+    ];
     let world = HittableList::new(list);
     let camera = Camera::default();
 
@@ -68,7 +83,7 @@ fn main() -> std::io::Result<()> {
                 let v = (j as f64 + rng.gen_range(0.0..1.0)) / NY as f64;
 
                 let ray = camera.get_ray(u, v);
-                col += color(&ray, &world);
+                col += color(&ray, &world, 0);
             }
 
             col /= NS as f64;
