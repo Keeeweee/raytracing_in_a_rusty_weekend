@@ -36,6 +36,10 @@ impl Vec3 {
         self / self.length()
     }
 
+    pub fn sqrt(self) -> Vec3 {
+        Vec3::new(self.x.sqrt(), self.y.sqrt(), self.z.sqrt())
+    }
+
     pub fn print_as_int(self, file: &mut File) -> std::io::Result<()> {
         writeln!(*file, "{} {} {}", self.x as i32, self.y as i32, self.z as i32)?;
         Ok(())
