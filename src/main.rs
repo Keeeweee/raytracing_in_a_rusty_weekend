@@ -15,7 +15,7 @@ mod camera;
 const NX: i32 = 200;
 const NY: i32 = 100;
 const NS: i32 = 100;
-const IMG_PATH: &str = "images/06-sphere-with-difusion.ppm";
+const IMG_PATH: &str = "images/07-sphere-with-difusion-gamma-corrected.ppm";
 
 fn print_header(file: &mut File) -> std::io::Result<()> {
     writeln!(file, "P3")?;
@@ -71,7 +71,9 @@ fn main() -> std::io::Result<()> {
                 col += color(&ray, &world);
             }
 
-            col *= 255.99 / (NS as f64);
+            col /= NS as f64;
+            col = col.sqrt();
+            col *= 255.99;
 
             col.print_as_int(&mut file)?;
         }
