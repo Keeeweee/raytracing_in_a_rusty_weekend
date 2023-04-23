@@ -17,7 +17,7 @@ mod material;
 const NX: i32 = 200;
 const NY: i32 = 100;
 const NS: i32 = 100;
-const IMG_PATH: &str = "images/08-spheres-with-materials.ppm";
+const IMG_PATH: &str = "images/09-spheres-with-materials-fuzzy-reflections.ppm";
 
 const MAX_DEPTH:i32 = 50;
 
@@ -65,10 +65,12 @@ fn main() -> std::io::Result<()> {
                                                                  Box::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0))))),
                                             Box::new(Sphere::new(Vec3::new(1.0, 0.0, -1.0),
                                                                  0.5,
-                                                                 Box::new(Metal::new(Vec3::new(0.8, 0.6, 0.2))))),
+                                                                 Box::new(Metal::new(Vec3::new(0.8, 0.6, 0.2),
+                                                                                                0.3)))),
                                             Box::new(Sphere::new(Vec3::new(-1.0, 0.0, -1.0),
                                                                  0.5,
-                                                                 Box::new(Metal::new(Vec3::new(0.8, 0.8, 0.8))))),
+                                                                 Box::new(Metal::new(Vec3::new(0.8, 0.8, 0.8),
+                                                                                                1.0)))),
 
     ];
     let world = HittableList::new(list);
