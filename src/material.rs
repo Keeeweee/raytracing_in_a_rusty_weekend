@@ -85,7 +85,7 @@ impl Dielectric {
 
 impl Material for Dielectric {
     fn scatter(&self, ray: &Ray, hit_record: &HitRecord) -> Option<(Ray, Vec3)> {
-        let reflected = reflect(ray.direction.unit(), hit_record.normal);
+        let reflected = reflect(ray.direction, hit_record.normal);
         let outward_normal: Vec3;
         let ni_over_nt: f64;
         let cosine: f64;

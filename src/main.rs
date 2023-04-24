@@ -1,3 +1,4 @@
+use std::env;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 use std::fs::File;
@@ -17,7 +18,7 @@ mod material;
 const NX: i32 = 200;
 const NY: i32 = 100;
 const NS: i32 = 100;
-const IMG_PATH: &str = "images/10-spheres-with-glass-material.ppm";
+const IMG_PATH: &str = "images/11-spheres-with-bubble-glass-material.ppm";
 
 const MAX_DEPTH:i32 = 50;
 
@@ -57,7 +58,8 @@ fn main() -> std::io::Result<()> {
     let mut file = File::create(IMG_PATH)?;
     print_header(&mut file)?;
 
-    let list: Vec<Box<dyn Hittable>> = vec![Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0),
+    let list: Vec<Box<dyn Hittable>> = vec![
+                                            Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0),
                                                                  0.5,
                                                                  Box::new(Lambertian::new(Vec3::new(0.1, 0.2, 0.5))))),
                                             Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0),
@@ -69,6 +71,9 @@ fn main() -> std::io::Result<()> {
                                                                                                 0.3)))),
                                             Box::new(Sphere::new(Vec3::new(-1.0, 0.0, -1.0),
                                                                  0.5,
+                                                                 Box::new(Dielectric::new(1.5)))),
+                                            Box::new(Sphere::new(Vec3::new(-1.0, 0.0, -1.0),
+                                                                 -0.45,
                                                                  Box::new(Dielectric::new(1.5)))),
 
     ];
