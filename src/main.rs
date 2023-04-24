@@ -17,7 +17,7 @@ mod material;
 const NX: i32 = 200;
 const NY: i32 = 100;
 const NS: i32 = 100;
-const IMG_PATH: &str = "images/09-spheres-with-materials-fuzzy-reflections.ppm";
+const IMG_PATH: &str = "images/10-spheres-with-glass-material.ppm";
 
 const MAX_DEPTH:i32 = 50;
 
