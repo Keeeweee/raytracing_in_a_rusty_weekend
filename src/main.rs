@@ -33,7 +33,7 @@ fn color(ray: &Ray, world: &dyn Hittable, depth: i32) -> Vec3 {
     return match world.hit(ray, 0.001, f64::INFINITY) {
         Some(hit_record) => {
             if depth > MAX_DEPTH {
-                Vec3::new(0.0, 0.0, 0.0);
+                return Vec3::new(0.0, 0.0, 0.0);
             }
 
             match hit_record.material.scatter(ray, &hit_record) {
