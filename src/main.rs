@@ -17,7 +17,7 @@ mod material;
 const NX: i32 = 200;
 const NY: i32 = 100;
 const NS: i32 = 100;
-const IMG_PATH: &str = "images/11-spheres-with-bubble-glass-material.ppm";
+const IMG_PATH: &str = "images/12-spheres-with-top-down-camera.ppm";
 
 const MAX_DEPTH:i32 = 50;
 
@@ -77,7 +77,11 @@ fn main() -> std::io::Result<()> {
 
     ];
     let world = HittableList::new(list);
-    let camera = Camera::default();
+    let camera = Camera::new(Vec3::new(-2.0, 2.0, 1.0),
+                                        Vec3::new(0.0, 0.0, -1.0),
+                                        Vec3::new(0.0, 1.0, 0.0),
+                                            90.0,
+                                            NX as f64 / NY as f64);
 
     let mut rng = rand::thread_rng();
     for j in (0..NY).rev() {
