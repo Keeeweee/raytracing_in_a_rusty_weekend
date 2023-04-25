@@ -17,7 +17,7 @@ mod material;
 const NX: i32 = 200;
 const NY: i32 = 100;
 const NS: i32 = 100;
-const IMG_PATH: &str = "images/12-spheres-with-top-down-camera.ppm";
+const IMG_PATH: &str = "images/13-spheres-with-focus-blur.ppm";
 
 const MAX_DEPTH:i32 = 50;
 
@@ -77,11 +77,15 @@ fn main() -> std::io::Result<()> {
 
     ];
     let world = HittableList::new(list);
-    let camera = Camera::new(Vec3::new(-2.0, 2.0, 1.0),
-                                        Vec3::new(0.0, 0.0, -1.0),
+    let look_from = Vec3::new(3.0, 3.0, 2.0);
+    let look_at = Vec3::new(0.0, 0.0, -1.0);
+    let camera = Camera::new(look_from,
+                                        look_at,
                                         Vec3::new(0.0, 1.0, 0.0),
-                                            90.0,
-                                            NX as f64 / NY as f64);
+                                            20.0,
+                                            NX as f64 / NY as f64,
+                                            2.0,
+                             (look_from - look_at).length());
 
     let mut rng = rand::thread_rng();
     for j in (0..NY).rev() {
